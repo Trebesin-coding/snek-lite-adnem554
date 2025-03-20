@@ -1,0 +1,65 @@
+import pygame
+import random
+from sys import exit
+
+pygame.init()
+
+height_of_screen = 700
+width_of_screen = 900
+
+screen = pygame.display.set_mode((width_of_screen, height_of_screen))
+game_clock = pygame.time.Clock()
+
+active = True
+
+font_style = pygame.font.Font(None, 80)
+
+character_emoji = "🧑‍💻"
+coin_emoji = "💰"
+
+movement_speed = 12
+
+character_position_x = 200
+character_position_y = 200
+character_rect = pygame.Rect(character_position_x, character_position_y, 80, 80)
+
+score = 0
+
+coin_dimension = 80
+coin_rect = pygame.Rect(random.randint(0, width_of_screen - coin_dimension), random.randint(0, height_of_screen - coin_dimension), coin_dimension, coin_dimension)
+
+while active:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            active = False
+            exit()
+
+    pressed_keys = pygame.key.get_pressed()
+
+    if pressed_keys[pygame.K_UP]:
+        character_rect.y -= movement_speed
+    if pressed_keys[pygame.K_DOWN]:
+        character_rect.y += movement_speed
+    if pressed_keys[pygame.K_LEFT]:
+        character_rect.x -= movement_speed
+    if pressed_keys[pygame.K_RIGHT]:
+        character_rect.x += movement_speed
+
+    if character_rect.colliderect(coin_rect):
+        score += 1
+        coin_rect.x = random.randint(0, width_of_screen - coin_dimension)
+        coin_rect.y = random.randint(0, height_of_screen - coin_dimension)
+
+    screen.fill((200, 200, 200))
+
+    character_rendered = font_style.render(character_emoji, True, (0, 0, 0))
+    coin_rendered = font_style.render(coin_emoji, True, (0, 0, 0))
+
+    screen.blit(character_rendered, character_rect.topleft)
+    screen.blit(coin_rendered, coin_rect.topleft)
+
+    score_display = font_style.render(f'Score: {score}', True, (0, 0, 0))
+    screen.blit(score_display, (width_of_screen - 180, 15))
+
+    pygame.display.update()
+    game_clock.tick(60)
